@@ -26,9 +26,9 @@ public class UserController {
 
         this.userRepository.save(savedUser);
 
-        UserResponseDto userResponseDto = new UserResponseDto(savedUser.getName(), savedUser.getEmail());
+        UserResponseDto userResponse = new UserResponseDto(savedUser.getName(), savedUser.getEmail());
 
-        return ResponseEntity.created(URI.create("/users/" + savedUser.getId())).body(userResponseDto);
+        return ResponseEntity.created(URI.create("/users/" + savedUser.getId())).body(userResponse);
     }
 
     @GetMapping
