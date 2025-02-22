@@ -1,9 +1,6 @@
 package com.biblioteca.biblioteca_spring.controller;
 
-import com.biblioteca.biblioteca_spring.domain.user.CreateUserDto;
-import com.biblioteca.biblioteca_spring.domain.user.User;
-import com.biblioteca.biblioteca_spring.domain.user.UserRepository;
-import com.biblioteca.biblioteca_spring.domain.user.UserResponseDto;
+import com.biblioteca.biblioteca_spring.domain.user.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +42,33 @@ public class UserController {
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
+
+        UserResponseDto userResponse = new UserResponseDto(user.getName(), user.getEmail());
+
+        return ResponseEntity.ok().body(userResponse);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserResponseDto> updateUserDto(@PathVariable UUID id, @RequestBody UpdateUserDto data) {
+        User user = this.userRepository.findById(id).orElse(null);
+
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if(data == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        if (data.name() != null) {
+            user.setName(data.name());
+        }
+
+        if (data.email() != null) {
+            user.setEmail(data.email());
+        }
+
+        this.userRepository.save(user);
 
         UserResponseDto userResponse = new UserResponseDto(user.getName(), user.getEmail());
 
