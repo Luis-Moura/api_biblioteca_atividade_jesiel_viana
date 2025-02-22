@@ -24,4 +24,9 @@ public class User {
 
     @Column(nullable = false)
     private String email;
+
+    public User(CreateUserDto createUserDto) {
+        this.name = createUserDto.name();
+        this.email = createUserDto.email();
+    }
 }
