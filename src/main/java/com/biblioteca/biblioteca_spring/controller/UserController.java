@@ -52,7 +52,7 @@ public class UserController {
         return ResponseEntity.ok().body(userResponse);
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<UserResponseDto> updateUserDto(@PathVariable UUID id, @RequestBody UpdateUserDto data) {
         User user = this.userRepository.findById(id).orElse(null);
 
