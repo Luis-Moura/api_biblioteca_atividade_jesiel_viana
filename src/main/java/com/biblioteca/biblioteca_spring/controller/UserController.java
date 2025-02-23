@@ -5,6 +5,7 @@ import com.biblioteca.biblioteca_spring.domain.user.UserRepository;
 import com.biblioteca.biblioteca_spring.domain.user.dto.CreateUserDto;
 import com.biblioteca.biblioteca_spring.domain.user.dto.UpdateUserDto;
 import com.biblioteca.biblioteca_spring.domain.user.dto.UserResponseDto;
+import com.biblioteca.biblioteca_spring.infra.exception.BadRequestException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +45,7 @@ public class UserController {
         User user = this.userRepository.findById(id).orElse(null);
 
         if (user == null) {
-            return ResponseEntity.notFound().build();
+            throw new BadRequestException("User Not Found");
         }
 
         UserResponseDto userResponse = new UserResponseDto(user.getName(), user.getEmail());
@@ -53,15 +54,15 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<UserResponseDto> updateUserDto(@PathVariable UUID id, @RequestBody UpdateUserDto data) {
+    public ResponseEntity<UserResponseDto> updateUserDto(@PathVariable UUID id, @RequestBody @Valid UpdateUserDto data) {
         User user = this.userRepository.findById(id).orElse(null);
 
         if (user == null) {
-            return ResponseEntity.notFound().build();
+            throw new BadRequestException("User Not Found");
         }
 
-        if (data == null) {
-            return ResponseEntity.badRequest().build();
+        if (data.name() == null && data.email() == null) {
+            throw new BadRequestException("Name AND Email Cannot be Empty");
         }
 
         if (data.name() != null) {
@@ -84,7 +85,7 @@ public class UserController {
         User user = this.userRepository.findById(id).orElse(null);
 
         if (user == null) {
-            return ResponseEntity.notFound().build();
+            throw new BadRequestException("User Not Found");
         }
 
         this.userRepository.delete(user);
