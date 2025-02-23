@@ -1,4 +1,6 @@
 package com.biblioteca.biblioteca_spring.domain.user.dto;
 
-public record UpdateUserDto(String name, String email) {
+import jakarta.validation.constraints.Email;
+
+public record UpdateUserDto(String name, @Email String email) {
 }

@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Map<String, Object>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
-        return buildResponse(HttpStatus.BAD_REQUEST, "Bad Request", "The Body of the Request Cannot be Empty.");
+        return buildResponse(HttpStatus.BAD_REQUEST, "Bad Request", "The Body of the Request Cannot be Empty or Have Extra Fields.");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
