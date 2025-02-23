@@ -1,6 +1,7 @@
 package com.biblioteca.biblioteca_spring.controller;
 
-import com.biblioteca.biblioteca_spring.domain.user.*;
+import com.biblioteca.biblioteca_spring.domain.user.User;
+import com.biblioteca.biblioteca_spring.domain.user.UserRepository;
 import com.biblioteca.biblioteca_spring.domain.user.dto.CreateUserDto;
 import com.biblioteca.biblioteca_spring.domain.user.dto.UpdateUserDto;
 import com.biblioteca.biblioteca_spring.domain.user.dto.UserResponseDto;
@@ -76,5 +77,18 @@ public class UserController {
         UserResponseDto userResponse = new UserResponseDto(user.getName(), user.getEmail());
 
         return ResponseEntity.ok().body(userResponse);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable UUID id) {
+        User user = this.userRepository.findById(id).orElse(null);
+
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        this.userRepository.delete(user);
+
+        return ResponseEntity.ok("Successful Deleted User!");
     }
 }
