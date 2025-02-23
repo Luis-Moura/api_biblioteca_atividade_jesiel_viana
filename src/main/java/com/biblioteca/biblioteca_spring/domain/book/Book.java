@@ -1,5 +1,6 @@
 package com.biblioteca.biblioteca_spring.domain.book;
 
+import com.biblioteca.biblioteca_spring.domain.book.dto.CreateBookDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,4 +34,12 @@ public class Book {
 
     @Column(nullable = false)
     private Integer amount;
+
+    public Book(CreateBookDto createBookDto) {
+        this.title = createBookDto.title();
+        this.author = createBookDto.author();
+        this.publisher = createBookDto.publisher();
+        this.year = createBookDto.year();
+        this.amount = createBookDto.amount();
+    }
 }
