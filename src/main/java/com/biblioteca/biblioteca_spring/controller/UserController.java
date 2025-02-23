@@ -1,6 +1,9 @@
 package com.biblioteca.biblioteca_spring.controller;
 
 import com.biblioteca.biblioteca_spring.domain.user.*;
+import com.biblioteca.biblioteca_spring.domain.user.dto.CreateUserDto;
+import com.biblioteca.biblioteca_spring.domain.user.dto.UpdateUserDto;
+import com.biblioteca.biblioteca_spring.domain.user.dto.UserResponseDto;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

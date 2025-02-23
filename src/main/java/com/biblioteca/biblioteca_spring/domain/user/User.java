@@ -1,5 +1,6 @@
 package com.biblioteca.biblioteca_spring.domain.user;
 
+import com.biblioteca.biblioteca_spring.domain.user.dto.CreateUserDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

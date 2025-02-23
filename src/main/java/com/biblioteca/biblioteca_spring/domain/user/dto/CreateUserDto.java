@@ -1,4 +1,4 @@
-package com.biblioteca.biblioteca_spring.domain.user;
+package com.biblioteca.biblioteca_spring.domain.user.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
