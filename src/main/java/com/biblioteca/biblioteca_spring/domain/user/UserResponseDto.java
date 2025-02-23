@@ -1,15 +1,6 @@
 package com.biblioteca.biblioteca_spring.domain.user;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class UserResponseDto {
-    private String name;
-    private String email;
+public record UserResponseDto(@NotBlank String name, @NotBlank String email) {
 }

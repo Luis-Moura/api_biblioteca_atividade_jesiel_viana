@@ -56,7 +56,7 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
 
-        if(data == null) {
+        if (data == null) {
             return ResponseEntity.badRequest().build();
         }
 
