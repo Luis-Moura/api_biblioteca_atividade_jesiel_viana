@@ -28,6 +28,9 @@ public class Loan {
     @Column
     private LocalDate returnDate;
 
+    @Column()
+    private Boolean isReturned;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
