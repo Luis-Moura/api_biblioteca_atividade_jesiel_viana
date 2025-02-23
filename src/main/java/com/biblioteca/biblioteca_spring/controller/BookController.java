@@ -8,7 +8,6 @@ import com.biblioteca.biblioteca_spring.infra.exception.BadRequestException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -35,6 +34,13 @@ public class BookController {
         List<Book> books = this.bookRepository.findAll();
 
         return ResponseEntity.ok().body(books);
+    }
+
+    @GetMapping("/available")
+    public ResponseEntity<List<Book>> getAvailableBooks() {
+        List<Book> availableBooks = this.bookRepository.findByAmountGreaterThan(0);
+
+        return ResponseEntity.ok().body(availableBooks);
     }
 
     @GetMapping("/{id}")
