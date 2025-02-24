@@ -133,4 +133,17 @@ public class LoanController {
 
         return ResponseEntity.ok().body(loanResponse);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteLoan(@PathVariable UUID id) {
+        Loan loan = this.loanRepository.findById(id).orElse(null);
+
+        if (loan == null) {
+            throw new BadRequestException("Loan Bot Found");
+        }
+
+        this.loanRepository.delete(loan);
+
+        return ResponseEntity.ok().body("Successful Deleted Loan");
+    }
 }
