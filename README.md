@@ -46,7 +46,7 @@ Esse projeto é parte de uma atividade do professor Jesiel Viana.
 
 ## Endpoints da API
 
-### Livros
+## Livros
 
 - **POST /books**: Cria um novo livro.
 - **GET /books**: Retorna todos os livros.
@@ -55,7 +55,7 @@ Esse projeto é parte de uma atividade do professor Jesiel Viana.
 - **PATCH /books/{id}**: Atualiza um livro pelo ID.
 - **DELETE /books/{id}**: Deleta um livro pelo ID.
 
-### Usuários
+## Usuários
 
 - **POST /users**: Cria um novo usuário.
 - **GET /users**: Retorna todos os usuários.
@@ -63,7 +63,7 @@ Esse projeto é parte de uma atividade do professor Jesiel Viana.
 - **PATCH /users/{id}**: Atualiza um usuário pelo ID.
 - **DELETE /users/{id}**: Deleta um usuário pelo ID.
 
-### Empréstimos
+## Empréstimos
 
 - **POST /loans/{userId}/{bookId}**: Cria um novo empréstimo.
 - **GET /loans**: Retorna todos os empréstimos.
