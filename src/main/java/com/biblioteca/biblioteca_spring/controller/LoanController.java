@@ -99,38 +99,4 @@ public class LoanController {
 
         return ResponseEntity.ok().body(loanResponse);
     }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<LoanResponseDto> returnLoan(@PathVariable UUID id) {
-        Loan loan = this.loanRepository.findById(id).orElse(null);
-
-        if (loan == null) {
-            throw new BadRequestException("Loan Bot Found");
-        }
-
-        if (loan.getIsReturned()) {
-            throw new BadRequestException("Book has Already Been Returned");
-        }
-
-        loan.setIsReturned(true);
-        this.loanRepository.save(loan);
-
-        Book book = this.bookRepository.findById(loan.getBook().getId()).orElse(null);
-
-        if (book == null) {
-            throw new BadRequestException("Book Not Found");
-        }
-
-        book.setAmount(book.getAmount() + 1);
-        this.bookRepository.save(book);
-
-        LoanResponseDto loanResponse = new LoanResponseDto(
-                loan.getLoanDate(),
-                loan.getReturnDate(),
-                loan.getUser().getId(),
-                loan.getBook()
-        );
-
-        return ResponseEntity.ok().body(loanResponse);
-    }
 }
