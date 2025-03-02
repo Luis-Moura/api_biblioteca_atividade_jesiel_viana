@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -41,7 +42,6 @@ public class AuthController {
         this.jwtEncoder = jwtEncoder;
     }
 
-    @Transactional
     @PostMapping("/register")
     public ResponseEntity<UserResponseDto> registerUser(@RequestBody @Valid RegisterUserDto data) {
         Optional<User> existingUser = this.userRepository.findByEmail(data.email());
@@ -55,6 +55,28 @@ public class AuthController {
         savedUser.setEmail(data.email());
         savedUser.setPassword(bCryptPasswordEncoder.encode(data.password()));
         savedUser.setUserRoles(UserRoles.USER);
+
+        this.userRepository.save(savedUser);
+
+        UserResponseDto userResponse = new UserResponseDto(savedUser.getName(), savedUser.getEmail());
+
+        return ResponseEntity.created(URI.create("/users/" + savedUser.getId())).body(userResponse);
+    }
+
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    @PostMapping("/register-librarian")
+    public ResponseEntity<UserResponseDto> registerLibrarian(@RequestBody @Valid RegisterUserDto data) {
+        Optional<User> existingUser = this.userRepository.findByEmail(data.email());
+
+        if (existingUser.isPresent()) {
+            throw new BadRequestException("User Already Exists");
+        }
+
+        User savedUser = new User();
+        savedUser.setName(data.name());
+        savedUser.setEmail(data.email());
+        savedUser.setPassword(bCryptPasswordEncoder.encode(data.password()));
+        savedUser.setUserRoles(UserRoles.LIBRARIAN);
 
         this.userRepository.save(savedUser);
 
