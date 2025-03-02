@@ -32,5 +32,8 @@ build/
 ### VS Code ###
 .vscode/
 
-.todo
 .env
+
+app.key
+app.pub
+KEYS
