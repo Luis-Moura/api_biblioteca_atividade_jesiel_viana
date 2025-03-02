@@ -5,6 +5,7 @@ import com.biblioteca.biblioteca_spring.domain.user.UserRepository;
 import com.biblioteca.biblioteca_spring.domain.user.UserRoles;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -15,6 +16,9 @@ public class AdminUserConfig {
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Value("${ADMIN_PASSWORD}")
+    private String adminPassword;
 
     @PostConstruct
     public void run() {
@@ -28,7 +32,7 @@ public class AdminUserConfig {
                     var user = new User();
                     user.setName("admin");
                     user.setEmail("admin");
-                    user.setPassword(bCryptPasswordEncoder.encode("blabla")); //tirar esse hardcode aqui
+                    user.setPassword(bCryptPasswordEncoder.encode(adminPassword)); //tirar esse hardcode aqui
                     user.setUserRoles(UserRoles.ADMIN);
                     userRepository.save(user);
                 }

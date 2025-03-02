@@ -12,10 +12,8 @@ public class BibliotecaSpringApplication {
         System.setProperty("DB_URL", dotenv.get("DB_URL"));
         System.setProperty("DB_USER", dotenv.get("DB_USER"));
         System.setProperty("DB_PASSWORD", dotenv.get("DB_PASSWORD"));
-//        System.setProperty("PRIVATE_KEY", dotenv.get("PRIVATE_KEY"));
-//        System.setProperty("PUBLIC_KEY", dotenv.get("PUBLIC_KEY"));
+        System.setProperty("ADMIN_PASSWORD", dotenv.get("ADMIN_PASSWORD"));
 
         SpringApplication.run(BibliotecaSpringApplication.class, args);
     }
-
 }

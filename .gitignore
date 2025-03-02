@@ -32,6 +32,9 @@ build/
 ### VS Code ###
 .vscode/
 
+.todo
+qodana.yaml
+
 .env
 
 app.key
