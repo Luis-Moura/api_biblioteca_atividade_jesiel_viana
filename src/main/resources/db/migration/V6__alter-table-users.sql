@@ -1,0 +1,5 @@
+ALTER TABLE users
+    ADD password VARCHAR(255);
+
+ALTER TABLE users
+    ALTER COLUMN password SET NOT NULL;

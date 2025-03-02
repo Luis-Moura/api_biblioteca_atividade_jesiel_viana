@@ -1,6 +1,6 @@
 package com.biblioteca.biblioteca_spring.domain.user;
 
-import com.biblioteca.biblioteca_spring.domain.user.dto.CreateUserDto;
+import com.biblioteca.biblioteca_spring.domain.autentication.register.RegisterUserDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,12 +26,15 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false)
+    private String password;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private UserRoles userRoles;
 
-    public User(CreateUserDto createUserDto) {
-        this.name = createUserDto.name();
-        this.email = createUserDto.email();
+    public User(RegisterUserDto registerUserDto) {
+        this.name = registerUserDto.name();
+        this.email = registerUserDto.email();
     }
 }
