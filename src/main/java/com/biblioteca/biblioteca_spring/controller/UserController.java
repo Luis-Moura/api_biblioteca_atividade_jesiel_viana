@@ -2,18 +2,19 @@ package com.biblioteca.biblioteca_spring.controller;
 
 import com.biblioteca.biblioteca_spring.domain.user.User;
 import com.biblioteca.biblioteca_spring.domain.user.UserRepository;
-import com.biblioteca.biblioteca_spring.domain.user.dto.CreateUserDto;
 import com.biblioteca.biblioteca_spring.domain.user.dto.UpdateUserDto;
 import com.biblioteca.biblioteca_spring.domain.user.dto.UserResponseDto;
 import com.biblioteca.biblioteca_spring.infra.exception.BadRequestException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Controller
@@ -22,24 +23,15 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    @PostMapping
-    public ResponseEntity<UserResponseDto> createUser(@RequestBody @Valid CreateUserDto data) {
-        User savedUser = new User(data);
-
-        this.userRepository.save(savedUser);
-
-        UserResponseDto userResponse = new UserResponseDto(savedUser.getName(), savedUser.getEmail());
-
-        return ResponseEntity.created(URI.create("/users/" + savedUser.getId())).body(userResponse);
-    }
-
     @GetMapping
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<List<UserResponseDto>> getUsers() {
         List<UserResponseDto> userResponse = userRepository.findAllUserResponse();
 
         return ResponseEntity.ok().body(userResponse);
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable UUID id) {
         User user = this.userRepository.findById(id).orElse(null);
@@ -49,6 +41,19 @@ public class UserController {
         }
 
         UserResponseDto userResponse = new UserResponseDto(user.getName(), user.getEmail());
+
+        return ResponseEntity.ok().body(userResponse);
+    }
+
+    @GetMapping("/get-me")
+    public ResponseEntity<UserResponseDto> getMe(JwtAuthenticationToken token) {
+        Optional<User> user = this.userRepository.findById(UUID.fromString(token.getName()));
+
+        if (user.isEmpty()) {
+            throw new BadRequestException("Usuário Não Encontrado");
+        }
+
+        UserResponseDto userResponse = new UserResponseDto(user.get().getName(), user.get().getEmail());
 
         return ResponseEntity.ok().body(userResponse);
     }
@@ -80,9 +85,9 @@ public class UserController {
         return ResponseEntity.ok().body(userResponse);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable UUID id) {
-        User user = this.userRepository.findById(id).orElse(null);
+    @DeleteMapping()
+    public ResponseEntity<String> deleteUser(JwtAuthenticationToken token) {
+        User user = this.userRepository.findById(UUID.fromString(token.getName())).orElse(null);
 
         if (user == null) {
             throw new BadRequestException("User Not Found");
