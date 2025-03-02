@@ -35,6 +35,7 @@ public class AdminUserConfig {
                     user.setPassword(bCryptPasswordEncoder.encode(adminPassword));
                     user.setUserRoles(UserRoles.ADMIN);
                     userRepository.save(user);
+                    System.out.println("Admin Created");
                 }
         );
     }

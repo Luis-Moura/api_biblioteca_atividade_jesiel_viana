@@ -65,7 +65,11 @@ public class UserController {
             throw new BadRequestException("User Not Found");
         }
 
-        if (data.name() == null && data.email() == null) {
+        if (user.getUserRoles().name().equals("ADMIN")) {
+            throw new BadRequestException("Admin Cannot be Updated");
+        }
+
+        if (data.name() == null && data.password() == null) {
             throw new BadRequestException("Name AND Email Cannot be Empty");
         }
 
@@ -73,8 +77,8 @@ public class UserController {
             user.setName(data.name());
         }
 
-        if (data.email() != null) {
-            user.setEmail(data.email());
+        if (data.password() != null) {
+            user.setPassword(data.password());
         }
 
         this.userRepository.save(user);
@@ -87,6 +91,10 @@ public class UserController {
     @DeleteMapping()
     public ResponseEntity<String> deleteUser(JwtAuthenticationToken token) {
         User user = this.userRepository.findById(UUID.fromString(token.getName())).orElse(null);
+
+        if (user.getUserRoles().name().equals("ADMIN")) {
+            throw new BadRequestException("Admin Cannot be Deleted");
+        }
 
         if (user == null) {
             throw new BadRequestException("User Not Found");
