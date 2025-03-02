@@ -2,13 +2,12 @@ package com.biblioteca.biblioteca_spring.controller;
 
 import com.biblioteca.biblioteca_spring.domain.autentication.login.LoginDto;
 import com.biblioteca.biblioteca_spring.domain.autentication.login.LoginResponseDto;
+import com.biblioteca.biblioteca_spring.domain.autentication.register.RegisterUserDto;
 import com.biblioteca.biblioteca_spring.domain.user.User;
 import com.biblioteca.biblioteca_spring.domain.user.UserRepository;
 import com.biblioteca.biblioteca_spring.domain.user.UserRoles;
-import com.biblioteca.biblioteca_spring.domain.autentication.register.RegisterUserDto;
 import com.biblioteca.biblioteca_spring.domain.user.dto.UserResponseDto;
 import com.biblioteca.biblioteca_spring.infra.exception.BadRequestException;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

@@ -14,7 +14,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Controller
@@ -47,20 +46,20 @@ public class UserController {
 
     @GetMapping("/get-me")
     public ResponseEntity<UserResponseDto> getMe(JwtAuthenticationToken token) {
-        Optional<User> user = this.userRepository.findById(UUID.fromString(token.getName()));
+        User user = this.userRepository.findById(UUID.fromString(token.getName())).orElse(null);
 
-        if (user.isEmpty()) {
-            throw new BadRequestException("Usuário Não Encontrado");
+        if (user == null) {
+            throw new BadRequestException("User Not Found");
         }
 
-        UserResponseDto userResponse = new UserResponseDto(user.get().getName(), user.get().getEmail());
+        UserResponseDto userResponse = new UserResponseDto(user.getName(), user.getEmail());
 
         return ResponseEntity.ok().body(userResponse);
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<UserResponseDto> updateUser(@PathVariable UUID id, @RequestBody @Valid UpdateUserDto data) {
-        User user = this.userRepository.findById(id).orElse(null);
+    @PatchMapping()
+    public ResponseEntity<UserResponseDto> updateUser(@RequestBody @Valid UpdateUserDto data, JwtAuthenticationToken token) {
+        User user = this.userRepository.findById(UUID.fromString(token.getName())).orElse(null);
 
         if (user == null) {
             throw new BadRequestException("User Not Found");
