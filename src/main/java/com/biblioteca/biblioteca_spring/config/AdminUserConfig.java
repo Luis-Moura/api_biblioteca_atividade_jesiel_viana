@@ -32,7 +32,7 @@ public class AdminUserConfig {
                     var user = new User();
                     user.setName("admin");
                     user.setEmail("admin");
-                    user.setPassword(bCryptPasswordEncoder.encode(adminPassword)); //tirar esse hardcode aqui
+                    user.setPassword(bCryptPasswordEncoder.encode(adminPassword));
                     user.setUserRoles(UserRoles.ADMIN);
                     userRepository.save(user);
                 }

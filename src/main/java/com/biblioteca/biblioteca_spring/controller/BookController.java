@@ -8,6 +8,7 @@ import com.biblioteca.biblioteca_spring.infra.exception.BadRequestException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -20,6 +21,7 @@ public class BookController {
     @Autowired
     private BookRepository bookRepository;
 
+    @PreAuthorize("hasAnyAuthority('SCOPE_LIBRARIAN', 'SCOPE_ADMIN')")
     @PostMapping
     public ResponseEntity<Book> createBook(@RequestBody @Valid CreateBookDto data) {
         Book savedBook = new Book(data);
@@ -54,6 +56,7 @@ public class BookController {
         return ResponseEntity.ok().body(book);
     }
 
+    @PreAuthorize("hasAnyAuthority('SCOPE_LIBRARIAN', 'SCOPE_ADMIN')")
     @PatchMapping("/{id}")
     public ResponseEntity<Book> updateBook(@PathVariable UUID id, @RequestBody @Valid UpdateBookDto data) {
         Book book = this.bookRepository.findById(id).orElse(null);
@@ -91,6 +94,7 @@ public class BookController {
         return ResponseEntity.ok().body(book);
     }
 
+    @PreAuthorize("hasAnyAuthority('SCOPE_LIBRARIAN', 'SCOPE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteBook(@PathVariable UUID id) {
         Book book = this.bookRepository.findById(id).orElse(null);

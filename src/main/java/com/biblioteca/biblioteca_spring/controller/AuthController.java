@@ -102,7 +102,7 @@ public class AuthController {
         }
 
         var now = Instant.now();
-        var expiresIn = 300L;
+        var expiresIn = 1L * 60 * 60;
 
         var scope = user.getUserRoles();
 
