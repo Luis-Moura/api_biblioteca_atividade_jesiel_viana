@@ -23,8 +23,12 @@ public class User {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private UserRoles userRoles;
 
     public User(CreateUserDto createUserDto) {
         this.name = createUserDto.name();
