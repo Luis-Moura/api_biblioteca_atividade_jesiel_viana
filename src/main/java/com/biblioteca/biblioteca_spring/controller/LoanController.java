@@ -10,11 +10,14 @@ import com.biblioteca.biblioteca_spring.domain.user.UserRepository;
 import com.biblioteca.biblioteca_spring.infra.exception.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -29,9 +32,9 @@ public class LoanController {
     @Autowired
     private BookRepository bookRepository;
 
-    @PostMapping("/{userId}/{bookId}")
-    public ResponseEntity<LoanResponseDto> createLoan(@PathVariable UUID userId, @PathVariable UUID bookId) {
-        User user = this.userRepository.findById(userId).orElse(null);
+    @PostMapping("/{bookId}")
+    public ResponseEntity<LoanResponseDto> createLoan(JwtAuthenticationToken token, @PathVariable UUID bookId) {
+        User user = this.userRepository.findById(UUID.fromString(token.getName())).orElse(null);
 
         if (user == null) {
             throw new BadRequestException("User Not Found.");
@@ -69,22 +72,35 @@ public class LoanController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('SCOPE_LIBRARIAN', 'SCOPE_ADMIN')")
     public ResponseEntity<List<LoanResponseDto>> getLoans() {
         List<LoanResponseDto> loanResponseList = this.loanRepository.findAllLoanResponse();
 
         return ResponseEntity.ok().body(loanResponseList);
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<LoanResponseDto>> getUserLoans(@PathVariable UUID userId) {
-        List<LoanResponseDto> loanResponseList = this.loanRepository.findLoansByUserId(userId);
+    @GetMapping("/user")
+    public ResponseEntity<List<LoanResponseDto>> getUserLoans(JwtAuthenticationToken token) {
+        User user = this.userRepository.findById(UUID.fromString(token.getName())).orElse(null);
+
+        if (user == null) {
+            throw new BadRequestException("User Not Found.");
+        }
+
+        List<LoanResponseDto> loanResponseList = this.loanRepository.findLoansByUserId(user.getId());
 
         return ResponseEntity.ok().body(loanResponseList);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LoanResponseDto> getLoanById(@PathVariable UUID id) {
-        Loan loan = this.loanRepository.findById(id).orElse(null);
+    public ResponseEntity<LoanResponseDto> getLoanById(@PathVariable UUID id, JwtAuthenticationToken token) {
+        User user = this.userRepository.findById(UUID.fromString(token.getName())).orElse(null);
+
+        if (user == null) {
+            throw new BadRequestException("User Not Found.");
+        }
+
+        Loan loan = this.loanRepository.findByIdAndUserId(id, user.getId()).orElse(null);
 
         if (loan == null) {
             throw new BadRequestException("Loan Bot Found");
@@ -100,12 +116,13 @@ public class LoanController {
         return ResponseEntity.ok().body(loanResponse);
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/return/{id}")
+    @PreAuthorize("hasAnyAuthority('SCOPE_LIBRARIAN', 'SCOPE_ADMIN')")
     public ResponseEntity<LoanResponseDto> returnLoan(@PathVariable UUID id) {
         Loan loan = this.loanRepository.findById(id).orElse(null);
 
         if (loan == null) {
-            throw new BadRequestException("Loan Bot Found");
+            throw new BadRequestException("Loan Not Found");
         }
 
         if (loan.getIsReturned()) {
@@ -113,7 +130,6 @@ public class LoanController {
         }
 
         loan.setIsReturned(true);
-        this.loanRepository.save(loan);
 
         Book book = this.bookRepository.findById(loan.getBook().getId()).orElse(null);
 
@@ -122,6 +138,8 @@ public class LoanController {
         }
 
         book.setAmount(book.getAmount() + 1);
+
+        this.loanRepository.save(loan);
         this.bookRepository.save(book);
 
         LoanResponseDto loanResponse = new LoanResponseDto(
@@ -135,11 +153,16 @@ public class LoanController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('SCOPE_LIBRARIAN', 'SCOPE_ADMIN')")
     public ResponseEntity<String> deleteLoan(@PathVariable UUID id) {
         Loan loan = this.loanRepository.findById(id).orElse(null);
 
         if (loan == null) {
-            throw new BadRequestException("Loan Bot Found");
+            throw new BadRequestException("Loan Not Found");
+        }
+
+        if (!loan.getIsReturned()) {
+            throw new BadRequestException("Loan is Not Returned Yet");
         }
 
         this.loanRepository.delete(loan);
