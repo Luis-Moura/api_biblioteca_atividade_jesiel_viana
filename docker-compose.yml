@@ -10,9 +10,23 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: senha123
     ports:
-      - "5433:5432"
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: cooperescrita_pgadmin
+    restart: no
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - '5050:80'
+    depends_on:
+      - postgres
+    networks:
+      - default
 
 volumes:
   postgres_data:
