@@ -13,6 +13,8 @@ public class BibliotecaSpringApplication {
         System.setProperty("DB_USER", dotenv.get("DB_USER"));
         System.setProperty("DB_PASSWORD", dotenv.get("DB_PASSWORD"));
         System.setProperty("ADMIN_PASSWORD", dotenv.get("ADMIN_PASSWORD"));
+        System.setProperty("EMAIL_USERNAME", dotenv.get("EMAIL_USERNAME"));
+        System.setProperty("EMAIL_PASSWORD", dotenv.get("EMAIL_PASSWORD"));
 
         SpringApplication.run(BibliotecaSpringApplication.class, args);
     }

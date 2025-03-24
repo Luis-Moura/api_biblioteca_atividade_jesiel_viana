@@ -8,6 +8,8 @@ import com.biblioteca.biblioteca_spring.domain.user.UserRepository;
 import com.biblioteca.biblioteca_spring.domain.user.UserRoles;
 import com.biblioteca.biblioteca_spring.domain.user.dto.UserResponseDto;
 import com.biblioteca.biblioteca_spring.infra.exception.BadRequestException;
+import com.biblioteca.biblioteca_spring.service.NotificationService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +35,9 @@ public class AuthController {
     private UserRepository userRepository;
 
     @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private final JwtEncoder jwtEncoder;
@@ -42,6 +47,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
+    @Transactional
     public ResponseEntity<UserResponseDto> registerUser(@RequestBody @Valid RegisterUserDto data) {
         Optional<User> existingUser = this.userRepository.findByEmail(data.email());
 
@@ -56,6 +62,12 @@ public class AuthController {
         savedUser.setUserRoles(UserRoles.USER);
 
         this.userRepository.save(savedUser);
+
+        boolean emailSent = notificationService.sendWelcomeNotification(savedUser);
+
+        if (!emailSent) {
+            throw new RuntimeException("Falha ao enviar e-mail de boas-vindas. Cadastro não realizado.");
+        }
 
         UserResponseDto userResponse = new UserResponseDto(savedUser.getName(), savedUser.getEmail());
 

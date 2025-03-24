@@ -8,6 +8,8 @@ import com.biblioteca.biblioteca_spring.domain.loan.dto.LoanResponseDto;
 import com.biblioteca.biblioteca_spring.domain.user.User;
 import com.biblioteca.biblioteca_spring.domain.user.UserRepository;
 import com.biblioteca.biblioteca_spring.infra.exception.BadRequestException;
+import com.biblioteca.biblioteca_spring.service.NotificationService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,7 +34,11 @@ public class LoanController {
     @Autowired
     private BookRepository bookRepository;
 
+    @Autowired
+    private NotificationService notificationService;
+
     @PostMapping("/{bookId}")
+    @Transactional
     public ResponseEntity<LoanResponseDto> createLoan(JwtAuthenticationToken token, @PathVariable UUID bookId) {
         User user = this.userRepository.findById(UUID.fromString(token.getName())).orElse(null);
 
@@ -60,6 +66,12 @@ public class LoanController {
 
         book.setAmount(book.getAmount() - 1);
         this.bookRepository.save(book);
+
+        boolean emailSent = notificationService.sendLoanNotification(user, book, savedLoan);
+
+        if (!emailSent) {
+            throw new RuntimeException("Falha ao enviar e-mail de confirmação. Empréstimo não realizado.");
+        }
 
         LoanResponseDto loanResponse = new LoanResponseDto(
                 savedLoan.getLoanDate(),
