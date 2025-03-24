@@ -9,7 +9,6 @@ import com.biblioteca.biblioteca_spring.domain.user.UserRoles;
 import com.biblioteca.biblioteca_spring.domain.user.dto.UserResponseDto;
 import com.biblioteca.biblioteca_spring.infra.exception.BadRequestException;
 import com.biblioteca.biblioteca_spring.service.NotificationService;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -47,7 +46,6 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    @Transactional
     public ResponseEntity<UserResponseDto> registerUser(@RequestBody @Valid RegisterUserDto data) {
         Optional<User> existingUser = this.userRepository.findByEmail(data.email());
 
@@ -63,11 +61,7 @@ public class AuthController {
 
         this.userRepository.save(savedUser);
 
-        boolean emailSent = notificationService.sendWelcomeNotification(savedUser);
-
-        if (!emailSent) {
-            throw new RuntimeException("Falha ao enviar e-mail de boas-vindas. Cadastro não realizado.");
-        }
+        notificationService.sendWelcomeNotification(savedUser);
 
         UserResponseDto userResponse = new UserResponseDto(savedUser.getName(), savedUser.getEmail());
 
@@ -113,7 +107,7 @@ public class AuthController {
         }
 
         var now = Instant.now();
-        var expiresIn = 1L * 60 * 60;
+        var expiresIn = 3600L;
 
         var scope = user.getUserRoles();
 
